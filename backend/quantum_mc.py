@@ -83,14 +83,3 @@ def price_european_call_quantum(
         "epsilon": epsilon,
         "raw_amplitude": round(float(result.estimation), 6)
     }
-
-
-if __name__ == "__main__":
-    result = price_european_call_quantum(
-        S0=178.0,
-        strike=185.0,
-        volatility=0.25,
-        risk_free_rate=0.05,
-        time_horizon=0.25
-    )
-    print(result)
