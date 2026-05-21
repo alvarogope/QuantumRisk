@@ -34,12 +34,10 @@ def get_volatility(ticker: str, period: str = "1y") -> float:
     return float(annualised_vol)
 
 def get_market_inputs(ticker: str) -> dict:
-    """
-    Single function that returns what the engine needs.
-    """
+    vol = get_volatility(ticker)
     return {
         "ticker": ticker,
         "current_price": get_current_price(ticker),
-        "volatility": annualised_vol := get_volatility(ticker),
-        "volatility_pct": round(annualised_vol * 100, 2)
+        "volatility": vol,
+        "volatility_pct": round(vol * 100, 2)
     }
