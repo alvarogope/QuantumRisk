@@ -16,7 +16,7 @@ def build_state_preparation(
 
     n_bins = 2 ** n_qubits
 
-    mu= np.log(S0) + (risk_free_rate - 0.5 * volatility ** 2) * time_horizon
+    mu = np.log(S0) + (risk_free_rate - 0.5 * volatility ** 2) * time_horizon
     sigma = volatility * np.sqrt(time_horizon)
     price_low = np.exp(mu - 3 * sigma)
     price_high = np.exp(mu + 3 * sigma)
