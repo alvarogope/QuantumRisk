@@ -24,12 +24,16 @@ build/
 Thumbs.db
 
 # React / Node
-frontend/node_modules/
+node_modules/
 frontend/.next/
 frontend/dist/
 frontend/build/
 npm-debug.log
 yarn-error.log
+
+# Root-level package files (accidentally created outside frontend/)
+/package.json
+/package-lock.json
 
 # uv
 .uv/
