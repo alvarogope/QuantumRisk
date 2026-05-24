@@ -1,8 +1,6 @@
 # What are API endpoints?
 
-from email.policy import HTTP
-from sys import version
-from fastapi import FastAPI, HTTPException, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -100,6 +98,8 @@ def price_option(request: OptionRequest):
             "quantum": quantum_result
         }
 
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -109,8 +109,14 @@ def portfolio_var(request: PortfolioRequest):
     Calculates Value at Risk for a portfolio using both methods.
     """
     try:
-        if abs(sum(request.weights) - 1.0) >1e-6:
-            raise HTTPExceptionn(
+        if len(request.tickers) != len(request.weights):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Got {len(request.tickers)} tickers but {len(request.weights)} weights — they must match."
+            )
+
+        if abs(sum(request.weights) - 1.0) > 1e-6:
+            raise HTTPException(
                 status_code=400,
                 detail="Weights must sum to 1.0"
             )
@@ -140,6 +146,8 @@ def portfolio_var(request: PortfolioRequest):
 
     except HTTPException:
         raise
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

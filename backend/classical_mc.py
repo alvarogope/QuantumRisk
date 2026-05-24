@@ -33,7 +33,7 @@ def price_european_call(
     """
     Prices a European call option using classical Monte Carlo
     """
-    n_steps = int(252 * time_horizon)
+    n_steps = max(int(252 * time_horizon), 1)  # guard: never 0 for sub-day horizons
 
     price_paths = simulate_gbm(
         S0, volatility, risk_free_rate, time_horizon, n_simulations, n_steps
@@ -49,7 +49,7 @@ def price_european_call(
 
     return {
         "method": "classical_monte_carlo",
-        "optioclear_price": round(float(option_price), 4),
+        "option_price": round(float(option_price), 4),
         "n_simulations": n_simulations,
         "final_prices_sample": final_prices[:5].tolist()
     }

@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import norm
 from market_data import get_market_inputs
 from classical_mc import simulate_gbm
 from quantum_mc import price_european_call_quantum
@@ -29,7 +30,7 @@ def calculate_portfolio_var(
     model that ignores correlation between stocks. Good enough for a
     portfolio demo; a production system would use a covariance matrix.
     """
-    if abs(sum(weights) - 1.0 > 1e-6):
+    if abs(sum(weights) - 1.0) > 1e-6:
         raise ValueError('Weights must sum to 1.0')
 
     if len(tickers) != len(weights):
@@ -98,25 +99,31 @@ def calculate_var_quantum(
     """
     weighted_quantum_var = 0.0
 
-    # what is zip()?
-
     for ticker, weight in zip(tickers, weights):
         market_data = get_market_inputs(ticker)
         S0 = market_data["current_price"]
         volatility = market_data["volatility"]
 
-    # This gives the quantum estimate of price movement
-    result = price_european_call_quantum(
-        S0=S0,
-        strike=S0,
-        volatility=volatility,
-        risk_free_rate=0.05,
-        time_horizon=time_horizon,
-        n_qubits=n_qubits
-    ) 
+        # Use an ATM call (strike = S0) to estimate expected price movement.
+        # For a lognormal distribution the ATM call price approximates:
+        #   call_ATM ≈ S0 * σ * √(T / 2π)
+        # The 95% one-day VaR under the same model is:
+        #   VaR ≈ S0 * 1.645 * σ * √T = call_ATM * 1.645 * √(2π) ≈ call_ATM * 4.13
+        # Dividing by S0 converts to a fractional loss, then scaling by the
+        # weighted portfolio value gives the dollar VaR contribution.
+        result = price_european_call_quantum(
+            S0=S0,
+            strike=S0,
+            volatility=volatility,
+            risk_free_rate=0.05,
+            time_horizon=time_horizon,
+            n_qubits=n_qubits
+        )
 
-    quantum_var_estimate = result["option_price"] * portfolio_value * weight
-    weighted_quantum_var += quantum_var_estimate
+        z_score = norm.ppf(confidence_level)            # e.g. 1.645 for 95%, 2.326 for 99%
+        var_scaling = z_score * np.sqrt(2 * np.pi)
+        quantum_var_estimate = (result["option_price"] / S0) * var_scaling * portfolio_value * weight
+        weighted_quantum_var += quantum_var_estimate
 
     return {
         "method": "quantum_amplitude_estimation",
