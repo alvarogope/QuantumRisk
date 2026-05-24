@@ -39,9 +39,14 @@ def build_state_preparation(
         if payoff > 0:
             angle = 2 * np.arcsin(np.sqrt(min(payoff, 1.0)))
             binary = format(i, f'0{n_qubits}b')
-            controls = [j for j in range(n_qubits) if binary[n_qubits - 1 - j] == '1']
-            if controls:
-                qc.mcry(angle, controls, n_qubits)
+            # Qubits whose bit is 0 in this bin's binary index must be flipped
+            # with X gates so the mcry fires only when the register holds |i⟩.
+            zero_qubits = [j for j in range(n_qubits) if binary[n_qubits - 1 - j] == '0']
+            for q in zero_qubits:
+                qc.x(q)
+            qc.mcry(angle, list(range(n_qubits)), n_qubits)
+            for q in zero_qubits:
+                qc.x(q)
 
     return qc, prices, max_payoff
 

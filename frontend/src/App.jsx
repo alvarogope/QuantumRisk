@@ -1,24 +1,20 @@
 import { useState } from 'react'
-import tickerInput from './components/TickerInput'
+import TickerInput from './components/TickerInput'
 import RiskDashboard from './components/RiskDashboard'
 import './App.css'
-import TickerInput from './components/TickerInput'
 
 export default function App() {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [error,   setError]   = useState(null)
 
   return (
     <div className="app">
       <header className="app-header">
-        <div className="header-left">
-          <h1>QuantumRisk</h1>
-          <p>Quantum Amplitude Estimation vs Classical Monte Carlo</p>
-        </div>
-        <div className="header-right">
-          <div className="status-dot" />
-        </div>
+        <h1 className="app-title">QuantumRisk</h1>
+        <p className="app-subtitle">
+          Quantum Amplitude Estimation · Classical Monte Carlo · Options &amp; VaR
+        </p>
       </header>
 
       <TickerInput
@@ -31,13 +27,13 @@ export default function App() {
       {error && <div className="error-state">{error}</div>}
 
       {loading && (
-        <div>
+        <div className="loading-state">
           <div className="loading-spinner" />
-          Running simulations...
+          Running simulations…
         </div>
       )}
 
-      {results && <RiskDashboard results={results}/>}
+      {results && <RiskDashboard results={results} />}
     </div>
   )
 }

@@ -34,10 +34,14 @@ def get_volatility(ticker: str, period: str = "1y") -> float:
     return float(annualised_vol)
 
 def get_market_inputs(ticker: str) -> dict:
-    vol = get_volatility(ticker)
+    # Fetch once — derive both current price and volatility from the same download.
+    prices = fetch_stock_data(ticker)
+    current_price = float(prices.iloc[-1])
+    log_returns = np.log(prices / prices.shift(1)).dropna()
+    vol = float(log_returns.std() * np.sqrt(252))
     return {
         "ticker": ticker,
-        "current_price": get_current_price(ticker),
+        "current_price": current_price,
         "volatility": vol,
         "volatility_pct": round(vol * 100, 2)
     }
