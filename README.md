@@ -10,7 +10,7 @@ A full-stack quantum finance application that prices European call options and c
 
 ---
 
-## 🤔 Why Quantum?
+## Why Quantum?
 
 Classical Monte Carlo prices options by simulating thousands of random future price paths. To double the accuracy you need to quadruple the number of simulations — O(1/√N) convergence.
 
