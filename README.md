@@ -10,6 +10,16 @@ A full-stack quantum finance application that prices European call options and c
 
 ---
 
+## 📸 Preview
+
+### Dashboard — Option Pricing & VaR
+![QuantumRisk Dashboard](assets/dashboard.png)
+
+### Risk Intelligence Panel
+![Risk Intelligence](assets/risk_intelligence.png)
+
+---
+
 ## Why Quantum?
 
 Classical Monte Carlo prices options by simulating thousands of random future price paths. To double the accuracy you need to quadruple the number of simulations — O(1/√N) convergence.
