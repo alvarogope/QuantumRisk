@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { priceOption, portfolioVar } from '../api/quantumRisk'
+import { priceOption, portfolioVar, fetchMarketData } from '../api/quantumRisk'
 
 /* ── Famous tickers by sector ─────────────────────────────────────────────── */
 const QUICK_PICKS = [
@@ -23,11 +23,37 @@ const parseClamp = (s, min, max, fallback) => {
 }
 
 export default function TickerInput({ setResults, setLoading, setError, loading }) {
-  const [ticker,    setTicker]    = useState('AAPL')
+  const [ticker,         setTicker]         = useState('AAPL')
 
   // String state avoids the "0 remains" bug — the field stays empty while typing
-  const [strikeStr, setStrikeStr] = useState('185')
-  const [monthsStr, setMonthsStr] = useState('3')
+  const [strikeStr,      setStrikeStr]      = useState('185')
+  const [monthsStr,      setMonthsStr]      = useState('3')
+
+  // Tracks the last fetched price so we can show the strike warning
+  const [currentPrice,   setCurrentPrice]   = useState(null)
+  const [strikeFetching, setStrikeFetching] = useState(false)
+
+  /* ── Shared fetch — called both on blur and on quick-pick selection ─────── */
+  const fetchAndSetStrike = async (rawTicker) => {
+    const t = rawTicker.trim().toUpperCase()
+    if (!t) return
+    try {
+      setStrikeFetching(true)
+      const data  = await fetchMarketData(t)
+      const price = data.current_price
+      if (price && price > 0) {
+        setCurrentPrice(price)
+        setStrikeStr(String(Math.round(price * 1.05)))
+      }
+    } catch {
+      // Silently ignore invalid tickers — leave strike as-is
+    } finally {
+      setStrikeFetching(false)
+    }
+  }
+
+  /* Blur handler reads from current ticker state */
+  const handleTickerBlur = () => fetchAndSetStrike(ticker)
 
   /* ── Blur: snap to valid range ─────────────────────────────────────────── */
   const handleStrikeBlur = () =>
@@ -47,10 +73,14 @@ export default function TickerInput({ setResults, setLoading, setError, loading 
       String(parseClamp(parseClamp(prev, MONTHS_MIN, MONTHS_MAX, 3) + delta, MONTHS_MIN, MONTHS_MAX, 3))
     )
 
+  /* ── Strike warning ────────────────────────────────────────────────────── */
+  const strikeNum         = parseClamp(strikeStr, STRIKE_MIN, STRIKE_MAX, 185)
+  const showStrikeWarning = currentPrice != null && strikeNum > currentPrice * 3
+
   /* ── Submit ────────────────────────────────────────────────────────────── */
   const handleRun = async () => {
-    const strike         = parseClamp(strikeStr, STRIKE_MIN, STRIKE_MAX, 185)
-    const timeMonths     = parseClamp(monthsStr, MONTHS_MIN, MONTHS_MAX, 3)
+    const strike           = parseClamp(strikeStr, STRIKE_MIN, STRIKE_MAX, 185)
+    const timeMonths       = parseClamp(monthsStr, MONTHS_MIN, MONTHS_MAX, 3)
     const timeHorizonYears = timeMonths / 12
 
     setLoading(true)
@@ -77,7 +107,7 @@ export default function TickerInput({ setResults, setLoading, setError, loading 
         }),
       ])
 
-      setResults({ optionData, varData })
+      setResults({ optionData, varData, strike })
     } catch (err) {
       setError(err.response?.data?.detail || 'Something went wrong. Is the backend running?')
     } finally {
@@ -97,16 +127,22 @@ export default function TickerInput({ setResults, setLoading, setError, loading 
             type="text"
             value={ticker}
             onChange={e => setTicker(e.target.value.toUpperCase())}
+            onBlur={handleTickerBlur}
             placeholder="AAPL"
             maxLength={10}
             spellCheck={false}
             autoCapitalize="characters"
           />
-          {/* Quick-pick: selecting fills the text input, then resets to placeholder */}
+          {/* Quick-pick: selecting fills the text input and auto-fetches price */}
           <select
             className="ticker-quick-pick"
             value=""
-            onChange={e => { if (e.target.value) setTicker(e.target.value) }}
+            onChange={e => {
+              if (e.target.value) {
+                setTicker(e.target.value)
+                fetchAndSetStrike(e.target.value)
+              }
+            }}
             title="Quick-pick a well-known ticker"
           >
             <option value="" disabled>Quick pick…</option>
@@ -120,40 +156,47 @@ export default function TickerInput({ setResults, setLoading, setError, loading 
           </select>
         </div>
         <span className="input-hint">
-          Type any Yahoo Finance ticker, or quick-pick below
+          Type any Yahoo Finance ticker, or quick-pick a famous one
         </span>
       </div>
 
-      {/* Strike Price — stepper */}
+      {/* Strike Price — stepper with auto-populate on ticker blur */}
       <div className="input-group">
         <label className="field-label">Strike Price ($)</label>
         <div className="stepper">
           <button
             className="stepper-btn"
             onClick={() => stepStrike(-1)}
-            disabled={loading}
+            disabled={loading || strikeFetching}
             tabIndex={-1}
             aria-label="Decrease strike price"
           >−</button>
           <input
             className="stepper-input"
             type="number"
-            value={strikeStr}
+            value={strikeFetching ? '' : strikeStr}
             onChange={e => setStrikeStr(e.target.value)}
             onBlur={handleStrikeBlur}
+            placeholder={strikeFetching ? 'Loading…' : ''}
             min={STRIKE_MIN}
             max={STRIKE_MAX}
             step={1}
+            readOnly={strikeFetching}
           />
           <button
             className="stepper-btn"
             onClick={() => stepStrike(+1)}
-            disabled={loading}
+            disabled={loading || strikeFetching}
             tabIndex={-1}
             aria-label="Increase strike price"
           >+</button>
         </div>
         <span className="input-hint">$1 – $10,000</span>
+        {showStrikeWarning && (
+          <span className="strike-warning">
+            Strike is far above current price. The option may be worthless.
+          </span>
+        )}
       </div>
 
       {/* Time Horizon — stepper, whole months */}

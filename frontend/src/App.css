@@ -27,16 +27,9 @@
   --red-dim:      rgba(248, 113, 113, 0.1);
 }
 
-/* ── Body — deep space ────────────────────────────────────────────────────── */
+/* ── Body ─────────────────────────────────────────────────────────────────── */
 body {
   background-color: var(--bg);
-  /* Large radial glow centred top + dot-grid overlay */
-  background-image:
-    radial-gradient(ellipse 1600px 1100px at 50% -5%,  rgba(37, 99, 235, 0.10)    0%, transparent 65%),
-    radial-gradient(ellipse 700px  500px  at 95% 0%,   rgba(129, 140, 248, 0.05)  0%, transparent 70%),
-    radial-gradient(circle, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 28px 28px;
-  background-attachment: fixed;
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
@@ -46,7 +39,7 @@ body {
 
 /* ── App shell ────────────────────────────────────────────────────────────── */
 .app {
-  max-width: 940px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 2rem 5rem;
 }
@@ -59,8 +52,8 @@ body {
 }
 
 .app-title {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2.8rem;
+  font-weight: 800;
   letter-spacing: -0.6px;
   line-height: 1.15;
   margin-bottom: 0.45rem;
@@ -71,7 +64,7 @@ body {
 }
 
 .app-subtitle {
-  font-size: 0.665rem;
+  font-size: 0.8rem;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.13em;
@@ -96,7 +89,7 @@ body {
 /* ── Field label (shared by all inputs) ───────────────────────────────────── */
 .field-label {
   display: block;
-  font-size: 0.615rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
@@ -131,7 +124,7 @@ body {
   width: 120px;
   border-radius: 10px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -166,7 +159,7 @@ body {
   align-items: center;
 }
 
-/* Quick-pick dropdown — fills ticker input on selection, resets to placeholder */
+/* Quick-pick dropdown — fills ticker input on selection */
 .ticker-quick-pick {
   height: 42px;
   padding: 0 1.75rem 0 0.75rem;
@@ -179,7 +172,6 @@ body {
   font-weight: 500;
   cursor: pointer;
   width: 120px;
-  /* Custom chevron */
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2364748b'/%3E%3C/svg%3E");
@@ -206,17 +198,6 @@ body {
   color: var(--text);
 }
 
-/* Hint text beneath the ticker field */
-.input-hint {
-  width: 240px;
-  font-size: 0.565rem;
-  color: var(--muted);
-  font-weight: 400;
-  margin-top: 0.35rem;
-  opacity: 0.62;
-  line-height: 1.5;
-}
-
 /* ── Stepper (typeable −/+ control) ──────────────────────────────────────── */
 .stepper {
   display: flex;
@@ -224,7 +205,6 @@ body {
   border-radius: 10px;
 }
 
-/* Focus ring wraps the whole group */
 .stepper:focus-within {
   box-shadow: 0 0 0 3px var(--blue-ring);
 }
@@ -289,7 +269,7 @@ body {
   padding: 0;
   border-radius: 0;
   font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-align: center;
@@ -301,13 +281,47 @@ body {
   background: rgba(59, 130, 246, 0.04);
 }
 
-/* Hide browser spinners */
+/* Hide browser spinners on stepper inputs */
 .stepper-input[type="number"]::-webkit-inner-spin-button,
 .stepper-input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 .stepper-input[type="number"] { -moz-appearance: textfield; }
+
+/* Strike price — subtle pulse while market price is being fetched */
+@keyframes strikePulse {
+  0%, 100% { border-color: rgba(255, 255, 255, 0.1); }
+  50%       { border-color: rgba(59, 130, 246, 0.45); }
+}
+
+.strike-loading {
+  animation: strikePulse 1s ease-in-out infinite;
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Amber warning shown when strike is unrealistically far above current price */
+.strike-warning {
+  font-size: 0.62rem;
+  color: var(--amber);
+  font-weight: 500;
+  margin-top: 0.3rem;
+  line-height: 1.45;
+  max-width: 200px;
+  opacity: 0.9;
+}
+
+/* Hint text beneath the ticker field */
+.input-hint {
+  width: 240px;
+  font-size: 0.565rem;
+  color: #94a3b8;
+  font-weight: 400;
+  margin-top: 0.35rem;
+  line-height: 1.5;
+}
+
 
 /* ── Run button ───────────────────────────────────────────────────────────── */
 .run-button {
@@ -419,7 +433,7 @@ body {
 
 .stat-label {
   display: block;
-  font-size: 0.615rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
@@ -430,7 +444,7 @@ body {
 .stat-value {
   display: block;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 700;
   color: var(--text);
   letter-spacing: -1px;
@@ -513,7 +527,7 @@ body {
 }
 
 .method-name {
-  font-size: 0.6rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
@@ -522,7 +536,7 @@ body {
 
 .method-price {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.5px;
   flex-shrink: 0;
@@ -574,7 +588,7 @@ body {
 }
 
 .var-method {
-  font-size: 0.6rem;
+  font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -603,7 +617,7 @@ body {
 }
 
 .var-pct {
-  font-size: 0.685rem;
+  font-size: 0.78rem;
   color: var(--muted);
   font-weight: 400;
 }
@@ -637,8 +651,8 @@ body {
 /* ── Inline explanation text ──────────────────────────────────────────────── */
 .explain {
   display: block;
-  font-size: 0.7rem;
-  color: #475569;
+  font-size: 0.78rem;
+  color: #94a3b8;
   font-family: 'Inter', sans-serif;
   line-height: 1.5;
   margin-top: 0.4rem;
@@ -649,4 +663,67 @@ body {
 /* Longer descriptive sentences — italic */
 .explain.italic {
   font-style: italic;
+}
+
+/* ── Risk Intelligence panel ──────────────────────────────────────────────── */
+.risk-intel-panel {
+  /* full-width below the charts row */
+}
+
+.rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rec-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.rec-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rec-row:first-child {
+  padding-top: 0;
+}
+
+/* Coloured status dot */
+.rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.3rem;   /* optical alignment with first line of text */
+}
+
+.rec-dot--green { background: var(--green);  box-shadow: 0 0 6px rgba(52, 211, 153, 0.55); }
+.rec-dot--amber { background: var(--amber);  box-shadow: 0 0 6px rgba(251, 191,  36, 0.55); }
+.rec-dot--red   { background: var(--red);    box-shadow: 0 0 6px rgba(248, 113, 113, 0.55); }
+
+/* Text column */
+.rec-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.rec-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rec-text {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #94a3b8;
+  line-height: 1.55;
 }

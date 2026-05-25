@@ -11,7 +11,7 @@ const BASE_URL = 'http://localhost:8000'
 // What is . in js?
 
 export const fetchMarketData = async (ticker) => {
-    const response = await axios.get('`${BASE_URL}/market-data/${ticker}`')
+    const response = await axios.get(`${BASE_URL}/market-data/${ticker}`)
     return response.data
 }
 

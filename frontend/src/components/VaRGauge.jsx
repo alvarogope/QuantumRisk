@@ -68,7 +68,7 @@ export default function VaRGauge({ classicalVar, quantumVar, portfolioValue }) {
             {getRiskLabel(rawQuantumPct)}
           </span>
           <span className="var-disclaimer">
-            quantum estimate — proxy via IQAE option pricing
+            quantum estimate, proxy via IQAE option pricing
           </span>
         </div>
 
