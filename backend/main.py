@@ -10,7 +10,7 @@ from classical_mc import price_european_call
 from quantum_mc import price_european_call_quantum
 from risk_engine import calculate_portfolio_var, calculate_var_quantum
 
-#Whta is this doing?
+
 app = FastAPI (
     title="QuantumRisk API",
     description="Quantum vs Classical Monte Carlo for options pricing and VaR",
