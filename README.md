@@ -6,7 +6,11 @@
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat&logo=numpy&logoColor=white)
 
-**Live Demo:** https://quantum-risk-z9ez.vercel.app
+## Live Demo
+
+**https://quantum-risk-z9ez.vercel.app**
+
+---
 
 A full-stack quantum finance application that prices European call options and calculates Value at Risk (VaR) using two methods side by side — **Iterative Quantum Amplitude Estimation (IQAE)** and classical **Monte Carlo simulation**. Real market data is fetched live via the yfinance API. The quantum method achieves a theoretical **quadratic speedup** over classical Monte Carlo: O(1/N) convergence vs O(1/√N).
 
