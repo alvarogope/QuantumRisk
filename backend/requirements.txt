@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+qiskit
+qiskit-algorithms
+qiskit-aer
+yfinance
+numpy
+scipy
+pydantic
